@@ -9,4 +9,5 @@
     <color name="ColorTextOther">#fad303</color>
     <color name="ColorThemExtra">#ff5252</color>
     <color name="ColorPrimaryLight">#1e2746</color>
+    <color name="colorMiscellaneousBackground">#222121</color>
 </resources>

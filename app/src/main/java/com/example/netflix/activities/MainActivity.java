@@ -1,8 +1,10 @@
 package com.example.netflix.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.widget.Toast;
@@ -17,41 +19,76 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private ActivityMainBinding binding;
-    private List<TVShow> tvShows= new ArrayList<>();
-    private TVShowsAdapter tvShowsAdapter;
 
+    private ActivityMainBinding binding;
+    private List<TVShow> tvShows = new ArrayList<>();
+    private TVShowsAdapter tvShowsAdapter;
     private MostPopularTVShowsViewModel viewModel;
+    private int currentPage = 1;
+    private int totalAvailablePages = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding= DataBindingUtil.setContentView(this,R.layout.activity_main);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         doInitialization();
 
 
     }
 
-    private void doInitialization(){
+    private void doInitialization() {
         binding.tvShowRecyclerView.setHasFixedSize(true);
-        viewModel=new ViewModelProvider(this).get(MostPopularTVShowsViewModel.class);
-        tvShowsAdapter= new TVShowsAdapter(tvShows);
+        viewModel = new ViewModelProvider(this).get(MostPopularTVShowsViewModel.class);
+        tvShowsAdapter = new TVShowsAdapter(tvShows);
         binding.tvShowRecyclerView.setAdapter(tvShowsAdapter);
+        binding.tvShowRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (!binding.tvShowRecyclerView.canScrollVertically(1)) {
+                    if (currentPage <= totalAvailablePages) {
+                        currentPage += 1;
+                        getMostPopularTVShows();
+
+                    }
+                }
+            }
+        });
         getMostPopularTVShows();
+
     }
 
-    private void getMostPopularTVShows(){
-        binding.setIsLoading(true);
-
-        viewModel.getMostPopularTVShows(0).observe(this,mostPopularTVShowsResponse->{
-                binding.setIsLoading(false);
-        if(mostPopularTVShowsResponse!=null) {
-            if(mostPopularTVShowsResponse.getTvShows()!=null){
-                tvShows.addAll(mostPopularTVShowsResponse.getTvShows());
-                tvShowsAdapter.notifyDataSetChanged();
-            }
-        }
-        }
+    private void getMostPopularTVShows() {
+        toggleLoading();
+        viewModel.getMostPopularTVShows(currentPage).observe(this, mostPopularTVShowsResponse -> {
+                    toggleLoading();
+                    if (mostPopularTVShowsResponse != null) {
+                        totalAvailablePages = mostPopularTVShowsResponse.getTotalPages();
+                        if (mostPopularTVShowsResponse.getTvShows() != null) {
+                            int oldCount = tvShows.size();
+                            tvShows.addAll(mostPopularTVShowsResponse.getTvShows());
+                            tvShowsAdapter.notifyItemRangeInserted(oldCount, tvShows.size());
+                        }
+                    }
+                }
         );
+    }
+
+    private void toggleLoading() {
+        if (currentPage == 1) {
+            if (binding.getIsLoading() != null && binding.getIsLoading()) {
+                binding.setIsLoading(false);
+            } else {
+                binding.setIsLoading(true);
+            }
+        } else {
+
+            if (binding.getIsLoadingMore() != null && binding.getIsLoadingMore()) {
+                binding.setIsLoadingMore(false);
+            } else {
+                binding.setIsLoadingMore(true);
+            }
+
+        }
     }
 }
