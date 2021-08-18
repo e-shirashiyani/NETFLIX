@@ -1,0 +1,16 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.NETFLIX" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/ColorPrimary</item>
+        <item name="colorPrimaryVariant">@color/ColorAccent</item>
+        <item name="colorOnPrimary">@color/ColorTextPrimary</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/colortexticons</item>
+        <item name="colorSecondaryVariant">@color/colortexticons</item>
+        <item name="colorOnSecondary">@color/ColorTextPrimary</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+    </style>
+</resources>

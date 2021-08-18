@@ -1,0 +1,16 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.NETFLIX" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/ColorPrimaryLight</item>
+        <item name="colorPrimaryVariant">@color/ColorPrimary</item>
+        <item name="colorOnPrimary">@color/ColorTextSecondary</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/colortexticons</item>
+        <item name="colorSecondaryVariant">@color/ColorPrimaryLight</item>
+        <item name="colorOnSecondary">@color/ColorTextPrimary</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+    </style>
+</resources>
