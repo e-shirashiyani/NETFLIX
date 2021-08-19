@@ -6,19 +6,21 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import com.example.netflix.R;
 import com.example.netflix.adapters.TVShowsAdapter;
 import com.example.netflix.databinding.ActivityMainBinding;
+import com.example.netflix.listeners.TVShowsListener;
 import com.example.netflix.models.TVShow;
 import com.example.netflix.viewmodels.MostPopularTVShowsViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TVShowsListener {
 
     private ActivityMainBinding binding;
     private List<TVShow> tvShows = new ArrayList<>();
@@ -39,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private void doInitialization() {
         binding.tvShowRecyclerView.setHasFixedSize(true);
         viewModel = new ViewModelProvider(this).get(MostPopularTVShowsViewModel.class);
-        tvShowsAdapter = new TVShowsAdapter(tvShows);
+        tvShowsAdapter = new TVShowsAdapter(tvShows,this);
         binding.tvShowRecyclerView.setAdapter(tvShowsAdapter);
         binding.tvShowRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -90,5 +92,17 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
+    }
+
+    @Override
+    public void onTVShowClicked(TVShow tvShow) {
+        Intent intent = new Intent(getApplicationContext(),TVShowDetailsActivity.class);
+        intent.putExtra("id",tvShow.getId());
+        intent.putExtra("name",tvShow.getName());
+        intent.putExtra("startDate",tvShow.getStartDate());
+        intent.putExtra("country",tvShow.getCountry());
+        intent.putExtra("network",tvShow.getNetwork());
+        intent.putExtra("status",tvShow.getStatus());
+        startActivity(intent);
     }
 }
