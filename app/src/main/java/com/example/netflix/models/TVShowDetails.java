@@ -12,6 +12,10 @@ public class TVShowDetails {
     @SerializedName("description")
     private String description;
 
+    @SerializedName("image_path")
+    private String imagePath;
+
+
     @SerializedName("runtime")
     private String runtime;
 
@@ -81,5 +85,13 @@ public class TVShowDetails {
 
     public void setEpisodes(List<Episode> episodes) {
         this.episodes = episodes;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 }

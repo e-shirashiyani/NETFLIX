@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">NETFLIX</string>
     <string name="miscellaneous">Miscellaneous</string>
+    <string name="read_more">Read More</string>
 </resources>

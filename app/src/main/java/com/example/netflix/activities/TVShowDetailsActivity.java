@@ -2,11 +2,13 @@ package com.example.netflix.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.text.HtmlCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -34,6 +36,8 @@ public class TVShowDetailsActivity extends AppCompatActivity {
 
     private void doInitialization() {
         tvShowDetailsViewModel = new ViewModelProvider(this).get(TVShowDetailsViewModel.class);
+        binding.imageBack.setOnClickListener(v ->
+                onBackPressed());
         getTVShowDetails();
     }
 
@@ -46,9 +50,36 @@ public class TVShowDetailsActivity extends AppCompatActivity {
                     if (tvShowDetailsResponse.getTvShowDetails() != null) {
                         if (tvShowDetailsResponse.getTvShowDetails().getPictures() != null) {
                             loadImageSlider(tvShowDetailsResponse.getTvShowDetails().getPictures());
-
-
                         }
+                        binding.setTvShowImageUrl(
+                                tvShowDetailsResponse.getTvShowDetails().getImagePath()
+                        );
+
+                        binding.imageTvShow.setVisibility(View.VISIBLE);
+                        binding.setDescription(
+                                String.valueOf(
+                                        HtmlCompat.fromHtml(
+                                                tvShowDetailsResponse.getTvShowDetails().getDescription()
+                                                ,HtmlCompat.FROM_HTML_MODE_LEGACY
+                                        )
+                                )
+                        );
+                        binding.textDescription.setVisibility(View.VISIBLE);
+                        binding.textReadMore.setVisibility(View.VISIBLE);
+                        binding.textReadMore.setOnClickListener(v -> {
+                            if(binding.textReadMore.getText().toString().equals("Read More")){
+                                binding.textDescription.setMaxLines(Integer.MAX_VALUE);
+                                binding.textDescription.setEllipsize(null);
+                                binding.textReadMore.setText("Read less");
+                            }else{
+                                binding.textDescription.setMaxLines(4);
+                                binding.textDescription.setEllipsize(TextUtils.TruncateAt.END);
+                                binding.textReadMore.setText(R.string.read_more);
+
+
+                            }
+                        });
+                        loadBasicTVShowDetails();
                     }
 
                 }
@@ -110,5 +141,19 @@ public class TVShowDetailsActivity extends AppCompatActivity {
             }
 
         }
+    }
+
+    private void loadBasicTVShowDetails(){
+        binding.setTvShowName(getIntent().getStringExtra("name"));
+        binding.setNetworkCountry(getIntent().getStringExtra("network") + " {"
+                        + getIntent().getStringExtra("country") +" }"
+                );
+
+        binding.setStatus(getIntent().getStringExtra("status"));
+        binding.setStartedDate(getIntent().getStringExtra("startDate"));
+        binding.textName.setVisibility(View.VISIBLE);
+        binding.textNetworkCountry.setVisibility(View.VISIBLE);
+        binding.textStatus.setVisibility(View.VISIBLE);
+        binding.textStarted.setVisibility(View.VISIBLE);
     }
 }
