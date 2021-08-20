@@ -7,6 +7,8 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -20,6 +22,8 @@ import com.example.netflix.R;
 import com.example.netflix.adapters.ImageSliderAdapter;
 import com.example.netflix.databinding.ActivityTvshowDetailsBinding;
 import com.example.netflix.viewmodels.TVShowDetailsViewModel;
+
+import java.util.Locale;
 
 public class TVShowDetailsActivity extends AppCompatActivity {
 
@@ -60,18 +64,18 @@ public class TVShowDetailsActivity extends AppCompatActivity {
                                 String.valueOf(
                                         HtmlCompat.fromHtml(
                                                 tvShowDetailsResponse.getTvShowDetails().getDescription()
-                                                ,HtmlCompat.FROM_HTML_MODE_LEGACY
+                                                , HtmlCompat.FROM_HTML_MODE_LEGACY
                                         )
                                 )
                         );
                         binding.textDescription.setVisibility(View.VISIBLE);
                         binding.textReadMore.setVisibility(View.VISIBLE);
                         binding.textReadMore.setOnClickListener(v -> {
-                            if(binding.textReadMore.getText().toString().equals("Read More")){
+                            if (binding.textReadMore.getText().toString().equals("Read More")) {
                                 binding.textDescription.setMaxLines(Integer.MAX_VALUE);
                                 binding.textDescription.setEllipsize(null);
                                 binding.textReadMore.setText("Read less");
-                            }else{
+                            } else {
                                 binding.textDescription.setMaxLines(4);
                                 binding.textDescription.setEllipsize(TextUtils.TruncateAt.END);
                                 binding.textReadMore.setText(R.string.read_more);
@@ -79,6 +83,32 @@ public class TVShowDetailsActivity extends AppCompatActivity {
 
                             }
                         });
+                        binding.setRating(String.format(
+                                Locale.getDefault(),
+                                "%.2f",
+                                Double.parseDouble(tvShowDetailsResponse.getTvShowDetails().getRating())
+                                )
+                        );
+
+                        if(tvShowDetailsResponse.getTvShowDetails().getGenres()!=null){
+                            binding.setGenre(tvShowDetailsResponse.getTvShowDetails().getGenres()[0]);
+                        }else{
+                            binding.setGenre("N/A");
+                        }
+                        binding.setRuntime(tvShowDetailsResponse.getTvShowDetails().getRuntime()+" Min");
+                        binding.viewDivider1.setVisibility(View.VISIBLE);
+                        binding.layoutMisc.setVisibility(View.VISIBLE);
+                        binding.viewDivider2.setVisibility(View.VISIBLE);
+                        binding.buttonWebsite.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent=new Intent(Intent.ACTION_VIEW);
+                                intent.setData(Uri.parse(tvShowDetailsResponse.getTvShowDetails().getUrl()));
+                                startActivity(intent);
+                            }
+                        });
+                        binding.buttonWebsite.setVisibility(View.VISIBLE);
+                        binding.buttonEpisodes.setVisibility(View.VISIBLE);
                         loadBasicTVShowDetails();
                     }
 
@@ -143,11 +173,11 @@ public class TVShowDetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void loadBasicTVShowDetails(){
+    private void loadBasicTVShowDetails() {
         binding.setTvShowName(getIntent().getStringExtra("name"));
         binding.setNetworkCountry(getIntent().getStringExtra("network") + " {"
-                        + getIntent().getStringExtra("country") +" }"
-                );
+                + getIntent().getStringExtra("country") + " }"
+        );
 
         binding.setStatus(getIntent().getStringExtra("status"));
         binding.setStartedDate(getIntent().getStringExtra("startDate"));
