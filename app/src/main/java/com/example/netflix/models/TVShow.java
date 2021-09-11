@@ -1,11 +1,28 @@
 package com.example.netflix.models;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import com.google.gson.annotations.SerializedName;
 
-public class TVShow {
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
 
+@Entity(tableName = "tvShows")
+public class TVShow implements Serializable {
+    @PrimaryKey
     @SerializedName("id")
     private int id;
+
+    public TVShow(int id, String name, String startDate, String country, String network, String status, String thumbnail) {
+        this.id = id;
+        this.name = name;
+        this.startDate = startDate;
+        this.country = country;
+        this.network = network;
+        this.status = status;
+        this.thumbnail = thumbnail;
+    }
 
     @SerializedName("name")
     private String name;
@@ -24,7 +41,6 @@ public class TVShow {
 
     @SerializedName("image_thumbnail_path")
     private String thumbnail;
-
 
 
     public int getId() {
@@ -82,7 +98,6 @@ public class TVShow {
     public void setThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
     }
-
 
 
 }

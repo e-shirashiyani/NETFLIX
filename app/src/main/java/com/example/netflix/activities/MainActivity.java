@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements TVShowsListener {
     private void doInitialization() {
         binding.tvShowRecyclerView.setHasFixedSize(true);
         viewModel = new ViewModelProvider(this).get(MostPopularTVShowsViewModel.class);
-        tvShowsAdapter = new TVShowsAdapter(tvShows,this);
+        tvShowsAdapter = new TVShowsAdapter(tvShows, this);
         binding.tvShowRecyclerView.setAdapter(tvShowsAdapter);
         binding.tvShowRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -96,13 +96,8 @@ public class MainActivity extends AppCompatActivity implements TVShowsListener {
 
     @Override
     public void onTVShowClicked(TVShow tvShow) {
-        Intent intent = new Intent(getApplicationContext(),TVShowDetailsActivity.class);
-        intent.putExtra("id",tvShow.getId());
-        intent.putExtra("name",tvShow.getName());
-        intent.putExtra("startDate",tvShow.getStartDate());
-        intent.putExtra("country",tvShow.getCountry());
-        intent.putExtra("network",tvShow.getNetwork());
-        intent.putExtra("status",tvShow.getStatus());
+        Intent intent = new Intent(getApplicationContext(), TVShowDetailsActivity.class);
+        intent.putExtra("tvShow", tvShow);
         startActivity(intent);
     }
 }

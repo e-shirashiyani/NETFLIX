@@ -8,20 +8,29 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.Toast;
 
 import com.example.netflix.R;
+import com.example.netflix.adapters.EpisodesAdapter;
 import com.example.netflix.adapters.ImageSliderAdapter;
 import com.example.netflix.databinding.ActivityTvshowDetailsBinding;
+import com.example.netflix.databinding.LayoutEpisodesBottomSheetBinding;
+import com.example.netflix.models.TVShow;
 import com.example.netflix.viewmodels.TVShowDetailsViewModel;
+import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.Locale;
 
@@ -29,6 +38,9 @@ public class TVShowDetailsActivity extends AppCompatActivity {
 
     private ActivityTvshowDetailsBinding binding;
     private TVShowDetailsViewModel tvShowDetailsViewModel;
+    private BottomSheetDialog episodesBottomSheetDialog;
+    private LayoutEpisodesBottomSheetBinding layoutEpisodesBottomSheetBinding;
+    private TVShow tvShow;
 
 
     @Override
@@ -42,12 +54,13 @@ public class TVShowDetailsActivity extends AppCompatActivity {
         tvShowDetailsViewModel = new ViewModelProvider(this).get(TVShowDetailsViewModel.class);
         binding.imageBack.setOnClickListener(v ->
                 onBackPressed());
+        tvShow= (TVShow) getIntent().getSerializableExtra("tvShow");
         getTVShowDetails();
     }
 
     private void getTVShowDetails() {
         binding.setIsLoading(true);
-        String tvShowId = String.valueOf(getIntent().getIntExtra("id", -1));
+        String tvShowId = String.valueOf(tvShow.getId());
         tvShowDetailsViewModel.getTvShowDetails(tvShowId).observe(
                 this, tvShowDetailsResponse -> {
                     binding.setIsLoading(false);
@@ -109,6 +122,45 @@ public class TVShowDetailsActivity extends AppCompatActivity {
                         });
                         binding.buttonWebsite.setVisibility(View.VISIBLE);
                         binding.buttonEpisodes.setVisibility(View.VISIBLE);
+                        binding.buttonEpisodes.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (episodesBottomSheetDialog==null){
+                                    episodesBottomSheetDialog=new BottomSheetDialog(
+                                            TVShowDetailsActivity.this);
+                                    layoutEpisodesBottomSheetBinding=DataBindingUtil.inflate(
+                                            LayoutInflater.from(TVShowDetailsActivity.this),
+                                            R.layout.layout_episodes_bottom_sheet,
+                                            findViewById(R.id.episodesContainer),
+                                            false
+                                    );
+                                    episodesBottomSheetDialog.setContentView(layoutEpisodesBottomSheetBinding.getRoot());
+                                    layoutEpisodesBottomSheetBinding.episodesRecyclerView.setAdapter(
+                                            new EpisodesAdapter(tvShowDetailsResponse.getTvShowDetails().getEpisodes()));
+
+                                    layoutEpisodesBottomSheetBinding.textTitle.setText(
+                                            String.format("Episode | %s",tvShow.getName())
+                                    );
+                                    layoutEpisodesBottomSheetBinding.imageClose.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            episodesBottomSheetDialog.dismiss();
+                                        }
+                                    });
+                                }
+
+                                FrameLayout frameLayout=episodesBottomSheetDialog.findViewById(
+                                        com.google.android.material.R.id.design_bottom_sheet
+                                );
+                                if (frameLayout!=null){
+                                    BottomSheetBehavior<View> bottomSheetBehavior=BottomSheetBehavior.from(frameLayout);
+                                    bottomSheetBehavior.setPeekHeight(Resources.getSystem().getDisplayMetrics().heightPixels);
+                                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                                }
+
+                                episodesBottomSheetDialog.show();
+                            }
+                        });
                         loadBasicTVShowDetails();
                     }
 
@@ -174,13 +226,13 @@ public class TVShowDetailsActivity extends AppCompatActivity {
     }
 
     private void loadBasicTVShowDetails() {
-        binding.setTvShowName(getIntent().getStringExtra("name"));
-        binding.setNetworkCountry(getIntent().getStringExtra("network") + " {"
-                + getIntent().getStringExtra("country") + " }"
+        binding.setTvShowName(tvShow.getName());
+        binding.setNetworkCountry(tvShow.getNetwork() + " {"
+                + tvShow.getCountry() + " }"
         );
 
-        binding.setStatus(getIntent().getStringExtra("status"));
-        binding.setStartedDate(getIntent().getStringExtra("startDate"));
+        binding.setStatus(tvShow.getStatus());
+        binding.setStartedDate(tvShow.getStartDate());
         binding.textName.setVisibility(View.VISIBLE);
         binding.textNetworkCountry.setVisibility(View.VISIBLE);
         binding.textStatus.setVisibility(View.VISIBLE);
