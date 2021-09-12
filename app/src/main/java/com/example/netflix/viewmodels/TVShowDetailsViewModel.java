@@ -13,6 +13,8 @@ import com.example.netflix.repositories.TVShowDetailsRepository;
 import com.example.netflix.responses.TVShowDetailsResponse;
 
 import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.disposables.CompositeDisposable;
 
 public class TVShowDetailsViewModel extends AndroidViewModel {
 
@@ -32,5 +34,14 @@ public class TVShowDetailsViewModel extends AndroidViewModel {
     public Completable addToWatchList(TVShow tvShow){
         return tvShowDatabase.tvShowDao().addToWatchlist(tvShow);
     }
+
+    public Flowable<TVShow> getTVShowFromWatchList(String tvShowId){
+        return tvShowDatabase.tvShowDao().getTVShowFromWatchlist(tvShowId);
+    }
+
+    public Completable removeTVShowFromWatchList(TVShow tvShow){
+        return tvShowDatabase.tvShowDao().removeFromWatchlist(tvShow);
+    }
+
 
 }
